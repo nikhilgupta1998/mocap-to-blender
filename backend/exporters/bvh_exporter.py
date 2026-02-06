@@ -53,6 +53,7 @@ class BVHExporter:
             world_landmarks = first_frame.landmarks
         
         # Convert to numpy array for easier calculation
+        # Note: List comprehension used for compatibility with dict-like landmark objects
         lm_array = np.array([[lm['x'], lm['y'], lm['z']] for lm in world_landmarks])
         
         # Calculate bone offsets based on MediaPipe landmark positions
@@ -195,11 +196,16 @@ class BVHExporter:
             
             # End site for leaf bones
             if not child_info.get('children'):
-                # Calculate end site offset (10% of bone length for a tip)
-                end_offset = [offset[0] * 0.1, offset[1] * 0.1, offset[2] * 0.1]
-                # Ensure at least a small offset
-                if all(abs(x) < 1.0 for x in end_offset):
-                    end_offset = [0.0, 5.0, 0.0]
+                # Calculate end site offset as a small extension of the bone
+                # Use 10% of bone offset magnitude as end site length
+                bone_length = np.linalg.norm(offset)
+                if bone_length > 1.0:
+                    # For bones with significant length, extend 10% in same direction
+                    end_offset = [offset[0] * 0.1, offset[1] * 0.1, offset[2] * 0.1]
+                else:
+                    # For very small bones, use a minimum end site offset
+                    MIN_END_SITE_OFFSET = 5.0  # Minimum offset in Blender units
+                    end_offset = [0.0, MIN_END_SITE_OFFSET, 0.0]
                 
                 lines.append(f'{indent_str}  End Site')
                 lines.append(f'{indent_str}  {{')
