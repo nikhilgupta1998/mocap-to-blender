@@ -2,7 +2,7 @@
 Blender Python script generator for importing motion capture data.
 """
 from typing import List, Dict
-from ..recording import Recording
+from recording import Recording
 
 
 class BlenderScriptGenerator:

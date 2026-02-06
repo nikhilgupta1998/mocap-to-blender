@@ -3,8 +3,8 @@ BVH (Biovision Hierarchy) format exporter.
 """
 import numpy as np
 from typing import List, Dict
-from ..skeleton import BONE_HIERARCHY
-from ..recording import Recording
+from skeleton import BONE_HIERARCHY
+from recording import Recording
 
 
 class BVHExporter:
@@ -105,7 +105,7 @@ class BVHExporter:
         lines.append(f'Frame Time: {frame_time:.6f}')
         
         # Generate frame data
-        from ..retargeting import BoneRetargeter
+        from retargeting import BoneRetargeter
         retargeter = BoneRetargeter()
         
         for frame in recording.frames:
